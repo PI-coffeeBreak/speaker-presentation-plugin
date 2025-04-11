@@ -6,13 +6,13 @@ from services.component_registry import ComponentRegistry
 
 def register_plugin():
     ComponentRegistry.register_component(SpeakerComponent)
-    print("Speaker presentation plugin registered")
+    print("Speaker presentation plugin registered.")
     return router
 
 
 def unregister_plugin():
     ComponentRegistry.unregister_component("SpeakerComponent")
-    print("Speaker presentation plugin unregistered")
+    print("Speaker presentation plugin unregistered.")
 
 
 REGISTER = register_plugin
