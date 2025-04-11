@@ -7,4 +7,4 @@ class Speaker(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=False)
-    image = Column(String)  # Pode ser URL ou nome do ficheiro
+    image = Column(String, nullable=False)  # Pode ser URL ou nome do ficheiro
