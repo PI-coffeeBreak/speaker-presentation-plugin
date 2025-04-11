@@ -1,6 +1,6 @@
 from utils.api import Router
 from .router import router
-from schemas.speaker_component import SpeakerComponent
+from .schemas.speaker_component import SpeakerComponent
 from services.component_registry import ComponentRegistry
 
 
