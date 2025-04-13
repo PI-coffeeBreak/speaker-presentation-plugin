@@ -34,6 +34,8 @@ def get_speaker(speaker_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Speaker not found")
     return speaker
 
+from ..utils.uuid import is_valid_uuid
+
 @router.put("/{speaker_id}", response_model=SpeakerSchema)
 def update_speaker(
     speaker_id: int,
@@ -47,9 +49,9 @@ def update_speaker(
 
     update_data = speaker_data.dict()
 
-    # Skip image update if it's a UUID (assume already handled)
-    if update_data.get("image") and is_valid_uuid(update_data["image"]):
-        update_data.pop("image")
+    # Se a imagem atual for UUID, não permite atualização direta
+    if is_valid_uuid(speaker.image):
+        update_data.pop("image", None)
 
     for key, value in update_data.items():
         setattr(speaker, key, value)
@@ -65,6 +67,10 @@ def upload_speaker_image(
     db: Session = Depends(get_db),
     user: dict = Depends(check_role(["manage_speakers", "organizer"]))
 ):
+    
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
+
     speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
     if not speaker:
         raise HTTPException(status_code=404, detail="Speaker not found")
