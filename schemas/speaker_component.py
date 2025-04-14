@@ -1,8 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from schemas.ui.page import BaseComponentSchema
+from typing import Literal
 
 
-class SpeakerComponent(BaseComponentSchema):
-    name: str = Field(..., description="Speaker name")
-    description: str = Field(..., description="Speaker description")
-    image: str = Field(..., description="Speaker image URL")
+class Speaker(BaseComponentSchema):
+    name: Literal["Speaker"] = Field(default="Speaker", title="Component Name")
