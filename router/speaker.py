@@ -131,7 +131,7 @@ def remove_speaker_image(
     if is_valid_uuid(speaker.image):
         MediaService.unregister(db, speaker.image, force=True)
     else:
-        raise HTTPException(status_code=404, detail="Current image is external or not was not found")
+        raise HTTPException(status_code=404, detail="Current image is external or not found")
 
     speaker.image = None
     db.commit()
