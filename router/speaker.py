@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Path, File, UploadFile
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
 from dependencies.database import get_db
@@ -17,10 +17,19 @@ def create_speaker(
     db: Session = Depends(get_db),
     user: dict = Depends(check_role(["manage_speakers", "organizer"]))
 ):
-    if speaker.image and not is_valid_url(speaker.image):
-        raise HTTPException(status_code=400, detail="Invalid image URL")
+    image = speaker.image
 
-    new_speaker = SpeakerModel(**speaker.dict())
+    if image and not is_valid_url(image):
+        media = MediaService.register(
+            db=db,
+            max_size=10 * 1024 * 1024,
+            allows_rewrite=True,
+            valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
+            alias=image
+        )
+        image = media.uuid
+
+    new_speaker = SpeakerModel(**speaker.dict(), image=image)
     db.add(new_speaker)
     db.commit()
     db.refresh(new_speaker)
@@ -37,8 +46,6 @@ def get_speaker(speaker_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Speaker not found")
     return speaker
 
-from ..utils.uuid_url import is_valid_uuid
-
 @router.put("/{speaker_id}", response_model=SpeakerSchema)
 def update_speaker(
     speaker_id: int,
@@ -51,7 +58,6 @@ def update_speaker(
         raise HTTPException(status_code=404, detail="Speaker not found")
 
     update_data = speaker_data.dict(exclude_unset=True)
-
     new_image = update_data.get("image")
 
     if new_image:
@@ -64,38 +70,6 @@ def update_speaker(
 
     for key, value in update_data.items():
         setattr(speaker, key, value)
-
-    db.commit()
-    db.refresh(speaker)
-    return speaker
-
-@router.put("/{speaker_id}/image", response_model=SpeakerSchema)
-def upload_speaker_image(
-    speaker_id: int,
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers", "organizer"]))
-):
-    
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
-
-    speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
-    if not speaker:
-        raise HTTPException(status_code=404, detail="Speaker not found")
-
-    if is_valid_uuid(speaker.image):
-        MediaService.create_or_replace(db, speaker.image, file.file, file.filename)
-    else:
-        media = MediaService.register(
-            db=db,
-            max_size=10 * 1024 * 1024,
-            allows_rewrite=True,
-            valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
-            alias=file.filename
-        )
-        MediaService.create(db=db, uuid=media.uuid, data=file.file, filename=file.filename)
-        speaker.image = media.uuid
 
     db.commit()
     db.refresh(speaker)
