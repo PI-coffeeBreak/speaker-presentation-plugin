@@ -6,7 +6,7 @@ from services.ui.plugin_settings import create_plugin_setting, delete_plugin_set
 from schemas.plugin_setting import PluginSetting
 import logging
 
-logger = logging.getLogger("coffeebreak.plugins.speaker")
+logger = logging.getLogger("coffeebreak.speaker")
 
 PLUGIN_TITLE = "Speakers Presentation"
 PLUGIN_DESCRIPTION = "A plugin for presenting speakers in a conference or event setting."

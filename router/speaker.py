@@ -19,7 +19,7 @@ def create_speaker(
 ):
     image = speaker.image
 
-    if image and not is_valid_url(image):
+    if not is_valid_url(image):
         media = MediaService.register(
             db=db,
             max_size=10 * 1024 * 1024,
