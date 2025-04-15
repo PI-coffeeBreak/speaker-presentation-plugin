@@ -25,7 +25,7 @@ def create_speaker(
             max_size=10 * 1024 * 1024,
             allows_rewrite=True,
             valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
-            alias=image or "speaker-image"
+            alias=speaker.name
         )
         image = media.uuid
 
