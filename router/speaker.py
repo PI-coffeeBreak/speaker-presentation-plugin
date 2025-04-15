@@ -19,13 +19,13 @@ def create_speaker(
 ):
     image = speaker.image
 
-    if not is_valid_url(image):
+    if not image or not is_valid_url(image):
         media = MediaService.register(
             db=db,
             max_size=10 * 1024 * 1024,
             allows_rewrite=True,
             valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
-            alias=image
+            alias=image or "speaker-image"
         )
         image = media.uuid
 
