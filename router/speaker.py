@@ -30,7 +30,7 @@ def create_speaker(
         )
         image = media.uuid
 
-    new_speaker = SpeakerModel(**speaker.dict(), image=image)
+    new_speaker = SpeakerModel(**speaker.dict(exclude={"image"}), image=image)
     db.add(new_speaker)
     db.commit()
     db.refresh(new_speaker)
