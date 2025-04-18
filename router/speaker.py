@@ -8,6 +8,7 @@ from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
 from services.media import MediaService
 from ..utils.uuid_url import is_valid_uuid, is_valid_url
 from utils.api import Router
+from uuid import uuid4
 
 router = Router()
 
@@ -25,7 +26,7 @@ def create_speaker(
             max_size=10 * 1024 * 1024,
             allows_rewrite=True,
             valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
-            alias=speaker.name
+            alias=f"{speaker.name}-{uuid4()}"
         )
         image = media.uuid
 
