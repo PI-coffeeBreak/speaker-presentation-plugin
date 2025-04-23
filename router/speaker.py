@@ -6,7 +6,7 @@ from dependencies.auth import check_role
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
 from services.media import MediaService
-from ..utils.utils import is_valid_uuid, is_valid_url, slugify
+from ..utils.media import is_valid_uuid, is_valid_url, slugify
 from utils.api import Router
 from uuid import uuid4
 
