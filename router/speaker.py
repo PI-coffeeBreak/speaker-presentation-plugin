@@ -5,6 +5,7 @@ from dependencies.database import get_db
 from dependencies.auth import check_role
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
+from services.media import MediaService
 
 router = Router()
 
@@ -14,11 +15,26 @@ def create_speaker(
     db: Session = Depends(get_db),
     user: dict = Depends(check_role(["manage_speakers", "organizer"]))
 ):
-    new_speaker = SpeakerModel(**speaker.dict())
-    db.add(new_speaker)
+    existing_speaker = db.query(SpeakerModel).filter_by(name=speaker.name).first()
+    if existing_speaker:
+        raise HTTPException(status_code=400, detail="Speaker already exists")
+    
+    media = MediaService.register(
+        db=db,
+        max_size=50 * 1024 * 1024,
+        allows_rewrite=True,
+        valid_extensions=['.jpg', '.jpeg', '.png', '.gif', '.webp'],
+        alias="speaker_image"
+    )
+
+    db_speaker = SpeakerModel(
+        **speaker.model_dump(exclude={"image"}),
+        image=media.uuid
+    )
+    db.add(db_speaker)
     db.commit()
-    db.refresh(new_speaker)
-    return new_speaker
+    db.refresh(db_speaker)
+    return db_speaker
 
 @router.get("/", response_model=list[SpeakerSchema])
 def list_speakers(db: Session = Depends(get_db)):
@@ -42,8 +58,21 @@ def update_speaker(
     if not speaker:
         raise HTTPException(status_code=404, detail="Speaker not found")
     
-    for key, value in speaker_data.dict().items():
-        setattr(speaker, key, value)
+    # Update basic fields
+    speaker.name = speaker_data.name
+    speaker.description = speaker_data.description
+    
+    # Only update image if it's different from the current one
+    if speaker_data.image != speaker.image:
+        # Register new media for the image
+        media = MediaService.register(
+            db=db,
+            max_size=50 * 1024 * 1024,
+            allows_rewrite=True,
+            valid_extensions=['.jpg', '.jpeg', '.png', '.gif', '.webp'],
+            alias="speaker_image"
+        )
+        speaker.image = media.uuid
 
     db.commit()
     db.refresh(speaker)
@@ -62,3 +91,4 @@ def delete_speaker(
     db.delete(speaker)
     db.commit()
     return speaker
+
