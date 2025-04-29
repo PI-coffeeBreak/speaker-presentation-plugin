@@ -1,11 +1,14 @@
-from fastapi import Depends, HTTPException, Path
-from utils.api import Router
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import Optional
 from dependencies.database import get_db
 from dependencies.auth import check_role
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
 from services.media import MediaService
+from ..utils.media import is_valid_uuid, is_valid_url, slugify
+from utils.api import Router
+from uuid import uuid4
 
 router = Router()
 
@@ -13,25 +16,23 @@ router = Router()
 def create_speaker(
     speaker: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers", "organizer"]))
+    user: dict = Depends(check_role(["manage_speakers"]))
 ):
-    existing_speaker = db.query(SpeakerModel).filter_by(name=speaker.name).first()
-    if existing_speaker:
-        raise HTTPException(status_code=400, detail="Speaker already exists")
-    
-    media = MediaService.register(
-        db=db,
-        max_size=50 * 1024 * 1024,
-        allows_rewrite=True,
-        valid_extensions=['.jpg', '.jpeg', '.png', '.gif', '.webp'],
-        alias="speaker_image"
-    )
+    image = speaker.image
 
-    db_speaker = SpeakerModel(
-        **speaker.model_dump(exclude={"image"}),
-        image=media.uuid
-    )
-    db.add(db_speaker)
+    if not image or not is_valid_url(image):
+        alias = f"{slugify(speaker.name)}-{uuid4()}"
+        media = MediaService.register(
+            db=db,
+            max_size=10 * 1024 * 1024,
+            allows_rewrite=True,
+            valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
+            alias=alias
+        )
+        image = media.uuid
+
+    new_speaker = SpeakerModel(**speaker.dict(exclude={"image"}), image=image)
+    db.add(new_speaker)
     db.commit()
     db.refresh(db_speaker)
     return db_speaker
@@ -52,27 +53,32 @@ def update_speaker(
     speaker_id: int,
     speaker_data: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers", "organizer"]))
+    user: dict = Depends(check_role(["manage_speakers"]))
 ):
     speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
     if not speaker:
         raise HTTPException(status_code=404, detail="Speaker not found")
-    
-    # Update basic fields
-    speaker.name = speaker_data.name
-    speaker.description = speaker_data.description
-    
-    # Only update image if it's different from the current one
-    if speaker_data.image != speaker.image:
-        # Register new media for the image
-        media = MediaService.register(
-            db=db,
-            max_size=50 * 1024 * 1024,
-            allows_rewrite=True,
-            valid_extensions=['.jpg', '.jpeg', '.png', '.gif', '.webp'],
-            alias="speaker_image"
-        )
-        speaker.image = media.uuid
+
+    update_data = speaker_data.dict(exclude_unset=True)
+    new_image = update_data.get("image")
+
+    if new_image:
+        if is_valid_uuid(speaker.image) and is_valid_url(new_image):
+            MediaService.unregister(db, speaker.image, force=True)
+        elif is_valid_uuid(speaker.image) and not is_valid_url(new_image):
+            update_data.pop("image", None)
+        elif is_valid_url(speaker.image) and not is_valid_url(new_image):
+            media = MediaService.register(
+                db=db,
+                max_size=10 * 1024 * 1024,
+                allows_rewrite=True,
+                valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
+                alias=f"{slugify(speaker.name)}-{uuid4()}"
+            )
+            update_data["image"] = media.uuid
+
+    for key, value in update_data.items():
+        setattr(speaker, key, value)
 
     db.commit()
     db.refresh(speaker)
@@ -82,13 +88,35 @@ def update_speaker(
 def delete_speaker(
     speaker_id: int,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers", "organizer"]))
+    user: dict = Depends(check_role(["manage_speakers"]))
 ):
     speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
     if not speaker:
         raise HTTPException(status_code=404, detail="Speaker not found")
 
+    if is_valid_uuid(speaker.image):
+        MediaService.unregister(db, speaker.image, force=True)
+
     db.delete(speaker)
     db.commit()
     return speaker
 
+@router.delete("/{speaker_id}/image", response_model=SpeakerSchema)
+def remove_speaker_image(
+    speaker_id: int,
+    db: Session = Depends(get_db),
+    user: dict = Depends(check_role(["manage_speakers"]))
+):
+    speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
+    if not speaker:
+        raise HTTPException(status_code=404, detail="Speaker not found")
+
+    if is_valid_uuid(speaker.image):
+        MediaService.unregister(db, speaker.image, force=True)
+    else:
+        raise HTTPException(status_code=404, detail="Current image is external or was not found")
+
+    speaker.image = None
+    db.commit()
+    db.refresh(speaker)
+    return speaker
