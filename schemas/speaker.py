@@ -1,9 +1,10 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class SpeakerBase(BaseModel):
     name: str
     description: str
-    image: str
+    image: Optional[str] = None
 
 class SpeakerCreate(SpeakerBase):
     pass
