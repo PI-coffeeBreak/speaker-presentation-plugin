@@ -1,13 +1,17 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class SpeakerBase(BaseModel):
-    name: str
+    name: str = Field(..., max_length=255)
     description: str
     image: Optional[str] = None
+    activity_id: Optional[int] = None
 
-class SpeakerCreate(SpeakerBase):
-    pass
+class SpeakerCreate(BaseModel):
+    name: str
+    description: str = None
+    image: Optional[str] = None
+    activity_id: Optional[int] = None
 
 class Speaker(SpeakerBase):
     id: int
