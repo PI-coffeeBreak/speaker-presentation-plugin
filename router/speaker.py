@@ -1,14 +1,12 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import List, Optional
 from dependencies.database import get_db
 from dependencies.auth import check_role
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
-from services.media import MediaService
-from ..utils.media import is_valid_uuid, is_valid_url, slugify
+from ..services.speaker_service import SpeakerService
 from utils.api import Router
-from uuid import uuid4
 
 router = Router()
 
@@ -18,35 +16,39 @@ def create_speaker(
     db: Session = Depends(get_db),
     user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
-    image = speaker.image
+    """Create a new speaker"""
+    try:
+        return SpeakerService(db).create(speaker)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
-    if not image or not is_valid_url(image):
-        alias = f"{slugify(speaker.name)}-{uuid4()}"
-        media = MediaService.register(
-            db=db,
-            max_size=10 * 1024 * 1024,
-            allows_rewrite=True,
-            valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
-            alias=alias
-        )
-        image = media.uuid
-
-    new_speaker = SpeakerModel(**speaker.dict(exclude={"image"}), image=image)
-    db.add(new_speaker)
-    db.commit()
-    db.refresh(new_speaker)
-    return new_speaker
-
-@router.get("/", response_model=list[SpeakerSchema])
-def list_speakers(db: Session = Depends(get_db)):
-    return db.query(SpeakerModel).all()
+@router.get("/", response_model=List[SpeakerSchema])
+def list_speakers(
+    activity_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    """Get all speakers, optionally filtered by activity_id"""
+    try:
+        return SpeakerService(db).get_all(activity_id=activity_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.get("/{speaker_id}", response_model=SpeakerSchema)
 def get_speaker(speaker_id: int, db: Session = Depends(get_db)):
-    speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
-    if not speaker:
-        raise HTTPException(status_code=404, detail="Speaker not found")
-    return speaker
+    """Get a specific speaker by ID"""
+    try:
+        speaker = SpeakerService(db).get_by_id(speaker_id)
+        if not speaker:
+            raise HTTPException(status_code=404, detail="Speaker not found")
+        return speaker
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.put("/{speaker_id}", response_model=SpeakerSchema)
 def update_speaker(
@@ -55,34 +57,52 @@ def update_speaker(
     db: Session = Depends(get_db),
     user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
-    speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
-    if not speaker:
-        raise HTTPException(status_code=404, detail="Speaker not found")
-
-    update_data = speaker_data.dict(exclude_unset=True)
-    new_image = update_data.get("image")
-
-    if new_image:
-        if is_valid_uuid(speaker.image) and is_valid_url(new_image):
-            MediaService.unregister(db, speaker.image, force=True)
-        elif is_valid_uuid(speaker.image) and not is_valid_url(new_image):
-            update_data.pop("image", None)
-        elif is_valid_url(speaker.image) and not is_valid_url(new_image):
-            media = MediaService.register(
-                db=db,
-                max_size=10 * 1024 * 1024,
-                allows_rewrite=True,
-                valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
-                alias=f"{slugify(speaker.name)}-{uuid4()}"
-            )
-            update_data["image"] = media.uuid
-
-    for key, value in update_data.items():
-        setattr(speaker, key, value)
-
-    db.commit()
-    db.refresh(speaker)
-    return speaker
+    """Update a speaker"""
+    try:
+        speaker = SpeakerService(db).get_by_id(speaker_id)
+        if not speaker:
+            raise HTTPException(status_code=404, detail="Speaker not found")
+        return SpeakerService(db).update(speaker_id, speaker_data)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+@router.patch("/{speaker_id}", response_model=SpeakerSchema)
+def partial_update_speaker(
+    speaker_id: int,
+    speaker_data: SpeakerCreate,
+    db: Session = Depends(get_db),
+    user: dict = Depends(check_role(["manage_speakers"]))
+):
+    """Update a speaker"""
+    try:
+        speaker = SpeakerService(db).get_by_id(speaker_id)
+        if not speaker:
+            raise HTTPException(status_code=404, detail="Speaker not found")
+        return SpeakerService(db).update(speaker_id, speaker_data)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+@router.patch("/{speaker_id}", response_model=SpeakerSchema)
+def partial_update_speaker(
+    speaker_id: int,
+    speaker_data: SpeakerCreate,
+    db: Session = Depends(get_db),
+    user: dict = Depends(check_role(["manage_speakers"]))
+):
+    """Partially update a speaker"""
+    try:
+        speaker = SpeakerService(db).get_by_id(speaker_id)
+        if not speaker:
+            raise HTTPException(status_code=404, detail="Speaker not found")
+        return SpeakerService(db).update(speaker_id, speaker_data)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.delete("/{speaker_id}", response_model=SpeakerSchema)
 def delete_speaker(
@@ -90,13 +110,44 @@ def delete_speaker(
     db: Session = Depends(get_db),
     user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
-    speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
-    if not speaker:
-        raise HTTPException(status_code=404, detail="Speaker not found")
+    """Delete a speaker"""
+    try:
+        speaker = SpeakerService(db).get_by_id(speaker_id)
+        if not speaker:
+            raise HTTPException(status_code=404, detail="Speaker not found")
+        SpeakerService(db).delete(speaker_id)
+        return speaker
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
-    if is_valid_uuid(speaker.image):
-        MediaService.unregister(db, speaker.image, force=True)
+@router.delete("/{speaker_id}/image", response_model=SpeakerSchema)
+def remove_speaker_image(
+    speaker_id: int,
+    db: Session = Depends(get_db),
+    user: dict = Depends(check_role(["manage_speakers"]))
+):
+    """Remove a speaker's image"""
+    try:
+        speaker = SpeakerService(db).get_by_id(speaker_id)
+        if not speaker:
+            raise HTTPException(status_code=404, detail="Speaker not found")
+        return SpeakerService(db).remove_image(speaker_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
-    db.delete(speaker)
-    db.commit()
-    return speaker
+@router.get("/by-activity/{activity_id}", response_model=List[SpeakerSchema])
+def get_speakers_by_activity(
+    activity_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get all speakers for a specific activity"""
+    try:
+        return SpeakerService(db).get_all(activity_id=activity_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
