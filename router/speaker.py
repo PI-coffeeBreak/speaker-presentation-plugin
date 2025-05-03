@@ -14,7 +14,7 @@ router = Router()
 def create_speaker(
     speaker: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     """Create a new speaker"""
     try:
@@ -55,7 +55,7 @@ def update_speaker(
     speaker_id: int,
     speaker_data: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     """Update a speaker"""
     try:
@@ -73,7 +73,7 @@ def partial_update_speaker(
     speaker_id: int,
     speaker_data: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     """Partially update a speaker"""
     try:
@@ -90,7 +90,7 @@ def partial_update_speaker(
 def delete_speaker(
     speaker_id: int,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     """Delete a speaker"""
     try:
@@ -108,7 +108,7 @@ def delete_speaker(
 def remove_speaker_image(
     speaker_id: int,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     """Remove a speaker's image"""
     try:
