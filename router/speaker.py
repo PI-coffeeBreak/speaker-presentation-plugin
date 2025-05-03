@@ -100,23 +100,3 @@ def delete_speaker(
     db.delete(speaker)
     db.commit()
     return speaker
-
-@router.delete("/{speaker_id}/image", response_model=SpeakerSchema)
-def remove_speaker_image(
-    speaker_id: int,
-    db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
-):
-    speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
-    if not speaker:
-        raise HTTPException(status_code=404, detail="Speaker not found")
-
-    if is_valid_uuid(speaker.image):
-        MediaService.unregister(db, speaker.image, force=True)
-    else:
-        raise HTTPException(status_code=404, detail="Current image is external or was not found")
-
-    speaker.image = None
-    db.commit()
-    db.refresh(speaker)
-    return speaker
