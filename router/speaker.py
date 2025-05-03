@@ -16,7 +16,7 @@ router = Router()
 def create_speaker(
     speaker: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     image = speaker.image
 
@@ -53,7 +53,7 @@ def update_speaker(
     speaker_id: int,
     speaker_data: SpeakerCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
     if not speaker:
@@ -88,7 +88,7 @@ def update_speaker(
 def delete_speaker(
     speaker_id: int,
     db: Session = Depends(get_db),
-    user: dict = Depends(check_role(["manage_speakers"]))
+    user: dict = Depends(check_role(["cb-manage_speakers"]))
 ):
     speaker = db.query(SpeakerModel).filter_by(id=speaker_id).first()
     if not speaker:
