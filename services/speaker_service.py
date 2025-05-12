@@ -51,6 +51,7 @@ class SpeakerService:
         # Create speaker
         new_speaker = SpeakerModel(
             name=speaker_data.name,
+            role=speaker_data.role,
             description=speaker_data.description,
             image=image,
             activity_id=speaker_data.activity_id
@@ -119,6 +120,7 @@ class SpeakerService:
         speaker_copy = SpeakerModel(
             id=speaker.id,
             name=speaker.name,
+            role=speaker.role,
             description=speaker.description,
             image=speaker.image,
             activity_id=speaker.activity_id

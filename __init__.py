@@ -4,7 +4,6 @@ import logging
 
 logger = logging.getLogger("coffeebreak.speaker")
 
-PLUGIN_TITLE = "speaker-presentation-plugin"
 NAME = "Speaker Presentation"
 DESCRIPTION = "A plugin for presenting speakers in a conference or event setting."
 

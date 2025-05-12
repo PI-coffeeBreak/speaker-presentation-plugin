@@ -6,6 +6,7 @@ class Speaker(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False, index=True)
-    description = Column(Text, nullable=False)
+    role = Column(String(255), nullable=True)
+    description = Column(Text, nullable=True)
     image = Column(String, nullable=True)
     activity_id = Column(Integer, ForeignKey("activities.id"), nullable=True)
