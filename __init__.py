@@ -5,8 +5,7 @@ import logging
 
 logger = logging.getLogger("coffeebreak.speaker")
 
-PLUGIN_TITLE = "speaker-presentation-plugin"
-NAME = "Speaker Presentation"
+NAME = "Speaker Presentation Plugin"
 DESCRIPTION = "A plugin for presenting speakers in a conference or event setting."
 
 async def register_plugin():
