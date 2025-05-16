@@ -54,7 +54,11 @@ class SpeakerService:
             role=speaker_data.role,
             description=speaker_data.description,
             image=image,
-            activity_id=speaker_data.activity_id
+            activity_id=speaker_data.activity_id,
+            linkedin=speaker_data.linkedin,
+            facebook=speaker_data.facebook,
+            instagram=speaker_data.instagram,
+            youtube=speaker_data.youtube
         )
         
         self.db.add(new_speaker)
@@ -123,7 +127,11 @@ class SpeakerService:
             role=speaker.role,
             description=speaker.description,
             image=speaker.image,
-            activity_id=speaker.activity_id
+            activity_id=speaker.activity_id,
+            linkedin=speaker.linkedin,
+            facebook=speaker.facebook,
+            instagram=speaker.instagram,
+            youtube=speaker.youtube
         )
         
         self.db.delete(speaker)
