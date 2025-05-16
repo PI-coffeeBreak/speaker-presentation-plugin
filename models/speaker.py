@@ -10,3 +10,7 @@ class Speaker(Base):
     description = Column(Text, nullable=True)
     image = Column(String, nullable=True)
     activity_id = Column(Integer, ForeignKey("activities.id"), nullable=True)
+    linkedin = Column(String(255), nullable=True)
+    facebook = Column(String(255), nullable=True)
+    instagram = Column(String(255), nullable=True)
+    youtube = Column(String(255), nullable=True)
