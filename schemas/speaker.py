@@ -7,6 +7,12 @@ class SpeakerBase(BaseModel):
     description: str = None
     image: Optional[str] = None
     activity_id: Optional[int] = None
+    # social media links
+    linkedin: Optional[str] = None
+    facebook: Optional[str] = None
+    instagram: Optional[str] = None
+    youtube: Optional[str] = None
+    
 
 class SpeakerCreate(BaseModel):
     name: str
@@ -14,6 +20,10 @@ class SpeakerCreate(BaseModel):
     description: str = None
     image: Optional[str] = None
     activity_id: Optional[int] = None
+    linkedin: Optional[str] = None
+    facebook: Optional[str] = None
+    instagram: Optional[str] = None
+    youtube: Optional[str] = None
 
 class Speaker(SpeakerBase):
     id: int
