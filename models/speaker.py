@@ -1,4 +1,4 @@
-from coffeebreak.dependencies.database import Base
+from coffeebreak.db import ModelBase as Base
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
 
 class Speaker(Base):
