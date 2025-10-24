@@ -1,12 +1,12 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from dependencies.database import get_db
-from dependencies.auth import check_role
+from coffeebreak.db import DB as get_db
+from coffeebreak.auth import check_role
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
 from ..services.speaker_service import SpeakerService
-from utils.api import Router
+from coffeebreak import Router
 
 router = Router()
 

@@ -1,4 +1,4 @@
-from utils.api import Router
+from coffeebreak import Router
 from .speaker import router as speaker_router
 
 router = Router()

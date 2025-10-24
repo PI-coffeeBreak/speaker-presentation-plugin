@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate
-from models.activity import Activity
-from services.media import MediaService
+from coffeebreak.models import ActivityModel as Activity
+from coffeebreak import MediaService
 from ..utils.media import is_valid_uuid, is_valid_url, slugify
 from uuid import uuid4
 from fastapi import HTTPException
