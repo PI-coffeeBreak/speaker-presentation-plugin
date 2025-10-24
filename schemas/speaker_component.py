@@ -1,5 +1,5 @@
 from pydantic import Field
-from schemas.ui.page import BaseComponentSchema
+from coffeebreak.schemas.ui.page import BaseComponentSchema
 from typing import List, Optional, Literal
 from .speaker import Speaker as SpeakerSchema
 from enum import Enum
