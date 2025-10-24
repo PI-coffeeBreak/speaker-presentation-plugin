@@ -10,6 +10,20 @@ from coffeebreak import Router
 
 router = Router()
 
+@router.post("/batch/", response_model=List[SpeakerSchema])
+def create_speakers_batch(
+    speakers: List[SpeakerCreate],
+    db: Session = Depends(get_db),
+    user: dict = Depends(check_role(["manage_speakers"]))
+):
+    """Create multiple speakers in batch"""
+    try:
+        return SpeakerService(db).create_many(speakers)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 @router.post("/", response_model=SpeakerSchema)
 def create_speaker(
     speaker: SpeakerCreate,

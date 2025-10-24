@@ -3,8 +3,8 @@ from typing import Optional
 
 class SpeakerBase(BaseModel):
     name: str = Field(..., max_length=255)
-    role: str = None
-    description: str = None
+    role: Optional[str] = None
+    description: Optional[str] = None
     image: Optional[str] = None
     activity_id: Optional[int] = None
     # social media links
@@ -16,8 +16,8 @@ class SpeakerBase(BaseModel):
 
 class SpeakerCreate(BaseModel):
     name: str
-    role: str = None
-    description: str = None
+    role: Optional[str] = None
+    description: Optional[str] = None
     image: Optional[str] = None
     activity_id: Optional[int] = None
     linkedin: Optional[str] = None

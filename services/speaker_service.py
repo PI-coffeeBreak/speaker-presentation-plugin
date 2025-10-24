@@ -60,11 +60,58 @@ class SpeakerService:
             instagram=speaker_data.instagram,
             youtube=speaker_data.youtube
         )
-        
+
         self.db.add(new_speaker)
         self.db.commit()
         self.db.refresh(new_speaker)
         return new_speaker
+
+    def create_many(self, speakers_data: List[SpeakerCreate]) -> List[SpeakerModel]:
+        """Create multiple speakers in batch"""
+        new_speakers = []
+
+        for speaker_data in speakers_data:
+            # Handle image
+            image = speaker_data.image
+
+            if not image or not is_valid_url(image):
+                alias = f"{slugify(speaker_data.name)}-{uuid4()}"
+                media = MediaService.register(
+                    db=self.db,
+                    max_size=10 * 1024 * 1024,
+                    allows_rewrite=True,
+                    valid_extensions=['.jpg', '.jpeg', '.png', '.webp'],
+                    alias=alias
+                )
+                image = media.uuid
+
+            # Check if activity exists when activity_id is provided
+            if speaker_data.activity_id:
+                activity = self.db.query(Activity).filter(Activity.id == speaker_data.activity_id).first()
+                if not activity:
+                    raise HTTPException(status_code=404, detail=f"Activity with id {speaker_data.activity_id} not found")
+
+            # Create speaker
+            new_speaker = SpeakerModel(
+                name=speaker_data.name,
+                role=speaker_data.role,
+                description=speaker_data.description,
+                image=image,
+                activity_id=speaker_data.activity_id,
+                linkedin=speaker_data.linkedin,
+                facebook=speaker_data.facebook,
+                instagram=speaker_data.instagram,
+                youtube=speaker_data.youtube
+            )
+
+            self.db.add(new_speaker)
+            new_speakers.append(new_speaker)
+
+        self.db.commit()
+        for speaker in new_speakers:
+            self.db.refresh(speaker)
+
+        return new_speakers
     
     def update(self, speaker_id: int, speaker_data: SpeakerCreate) -> SpeakerModel:
         """Update an existing speaker"""
