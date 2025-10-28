@@ -1,12 +1,17 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from pydantic import BaseModel
 from coffeebreak.db import DB as get_db
 from coffeebreak.auth import check_role
 from ..models.speaker import Speaker as SpeakerModel
 from ..schemas.speaker import SpeakerCreate, Speaker as SpeakerSchema
 from ..services.speaker_service import SpeakerService
 from coffeebreak import Router
+
+class SpeakerOrderUpdate(BaseModel):
+    id: int
+    order: int
 
 router = Router()
 
@@ -143,6 +148,26 @@ def get_speakers_by_activity(
     """Get all speakers for a specific activity"""
     try:
         return SpeakerService(db).get_all(activity_id=activity_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@router.post("/reorder")
+def reorder_speakers(
+    updates: List[SpeakerOrderUpdate],
+    db: Session = Depends(get_db),
+    user: dict = Depends(check_role(["manage_speakers"]))
+):
+    """Bulk update speaker order"""
+    try:
+        service = SpeakerService(db)
+        for update in updates:
+            speaker = service.get_by_id(update.id)
+            if speaker:
+                speaker.order = update.order
+        db.commit()
+        return {"message": "Speaker order updated successfully", "count": len(updates)}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except Exception as e:

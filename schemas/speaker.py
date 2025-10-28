@@ -7,12 +7,13 @@ class SpeakerBase(BaseModel):
     description: Optional[str] = None
     image: Optional[str] = None
     activity_id: Optional[int] = None
+    order: Optional[int] = 0
     # social media links
     linkedin: Optional[str] = None
     facebook: Optional[str] = None
     instagram: Optional[str] = None
     youtube: Optional[str] = None
-    
+
 
 class SpeakerCreate(BaseModel):
     name: str
@@ -20,6 +21,7 @@ class SpeakerCreate(BaseModel):
     description: Optional[str] = None
     image: Optional[str] = None
     activity_id: Optional[int] = None
+    order: Optional[int] = 0
     linkedin: Optional[str] = None
     facebook: Optional[str] = None
     instagram: Optional[str] = None
