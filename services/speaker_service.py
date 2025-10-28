@@ -13,11 +13,11 @@ class SpeakerService:
         self.db = db
     
     def get_all(self, activity_id: Optional[int] = None) -> List[SpeakerModel]:
-        """Get all speakers, optionally filtered by activity"""
+        """Get all speakers, optionally filtered by activity, ordered by order field then name"""
         query = self.db.query(SpeakerModel)
         if activity_id is not None:
             query = query.filter(SpeakerModel.activity_id == activity_id)
-        return query.all()
+        return query.order_by(SpeakerModel.order.asc(), SpeakerModel.name.asc()).all()
     
     def get_by_id(self, speaker_id: int) -> SpeakerModel:
         """Get a speaker by ID"""
@@ -55,6 +55,7 @@ class SpeakerService:
             description=speaker_data.description,
             image=image,
             activity_id=speaker_data.activity_id,
+            order=speaker_data.order if speaker_data.order is not None else 0,
             linkedin=speaker_data.linkedin,
             facebook=speaker_data.facebook,
             instagram=speaker_data.instagram,
