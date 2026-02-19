@@ -1,0 +1,5 @@
+[tool.coffeebreak]
+identifier = "speaker-presentation-plugin"
+name = "Speaker Presentation Plugin"
+description = "A plugin for presenting speakers in a conference or event setting."
+config_page = true
