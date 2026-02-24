@@ -1,0 +1,60 @@
+{
+  "speakers": {
+    "title": "Gerenciamento de Palestrantes",
+    "loading": "Carregando palestrantes...",
+    "export": "Exportar",
+    "addSpeaker": "Adicionar Palestrante",
+    "searchPlaceholder": "Pesquisar palestrantes...",
+    "allActivities": "Todas as Atividades",
+    "noSpeakers": "Nenhum palestrante encontrado. Adicione seu primeiro palestrante usando o botão acima.",
+    "tryAgain": "Tentar Novamente",
+    "reorderSuccess": "Ordem dos palestrantes atualizada com sucesso",
+    "reorderError": "Falha ao atualizar ordem dos palestrantes",
+    "error": {
+      "fetch": "Falha ao buscar palestrantes. Por favor, tente novamente."
+    },
+    "modal": {
+      "addTitle": "Adicionar Novo Palestrante",
+      "editTitle": "Editar Palestrante",
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome do palestrante",
+      "role": "Cargo",
+      "rolePlaceholder": "Digite o cargo do palestrante",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Digite a descrição do palestrante",
+      "socialMedia": "Links de Redes Sociais (opcional)",
+      "linkedin": "URL do LinkedIn",
+      "facebook": "URL do Facebook",
+      "instagram": "URL do Instagram",
+      "youtube": "URL do YouTube",
+      "noActivities": "Nenhuma atividade encontrada",
+      "activity": "Atividade Associada (opcional)",
+      "activityPlaceholder": "Pesquisar por uma atividade",
+      "image": "Imagem",
+      "imageHint": "Recomendado: Imagem quadrada, pelo menos 300x300px",
+      "clearImage": "Limpar Imagem",
+      "cancel": "Cancelar",
+      "saveChanges": "Salvar Alterações",
+      "addSpeaker": "Adicionar Palestrante"
+    },
+    "confirmDelete": {
+      "title": "Confirmação",
+      "message": "Tem certeza que deseja excluir este palestrante?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    },
+    "table": {
+      "photo": "Foto",
+      "name": "Nome",
+      "role": "Cargo",
+      "description": "Descrição",
+      "activity": "Atividade",
+      "socialMedia": "Redes Sociais",
+      "actions": "Ações"
+    },
+    "pagination": {
+      "goToPage": "Ir para página",
+      "go": "Ir"
+    }
+  }
+}

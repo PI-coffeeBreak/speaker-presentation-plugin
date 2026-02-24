@@ -1,0 +1,60 @@
+{
+  "speakers": {
+    "title": "Speaker Management",
+    "loading": "Loading speakers...",
+    "export": "Export",
+    "addSpeaker": "Add Speaker",
+    "searchPlaceholder": "Search speakers...",
+    "allActivities": "All Activities",
+    "noSpeakers": "No speakers found. Add your first speaker using the button above.",
+    "tryAgain": "Try Again",
+    "reorderSuccess": "Speaker order updated successfully",
+    "reorderError": "Failed to update speaker order",
+    "error": {
+      "fetch": "Failed to fetch speakers. Please try again."
+    },
+    "modal": {
+      "addTitle": "Add New Speaker",
+      "editTitle": "Edit Speaker",
+      "name": "Name",
+      "namePlaceholder": "Enter speaker name",
+      "role": "Role",
+      "rolePlaceholder": "Enter speaker role",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter speaker description",
+      "socialMedia": "Social Media Links (optional)",
+      "linkedin": "LinkedIn URL",
+      "facebook": "Facebook URL",
+      "instagram": "Instagram URL",
+      "youtube": "YouTube URL",
+      "noActivities": "No activities found",
+      "activity": "Associated Activity (optional)",
+      "activityPlaceholder": "Search for an activity",
+      "image": "Image",
+      "imageHint": "Recommended: Square image, at least 300x300px",
+      "clearImage": "Clear Image",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "addSpeaker": "Add Speaker"
+    },
+    "confirmDelete": {
+      "title": "Confirmation",
+      "message": "Are you sure you want to delete this speaker?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "table": {
+      "photo": "Photo",
+      "name": "Name",
+      "role": "Role",
+      "description": "Description",
+      "activity": "Activity",
+      "socialMedia": "Social Media",
+      "actions": "Actions"
+    },
+    "pagination": {
+      "goToPage": "Go to page",
+      "go": "Go"
+    }
+  }
+}
