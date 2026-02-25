@@ -1,0 +1,60 @@
+{
+  "speakers": {
+    "title": "Gestão de Oradores",
+    "loading": "A carregar oradores...",
+    "export": "Exportar",
+    "addSpeaker": "Adicionar Orador",
+    "searchPlaceholder": "Pesquisar oradores...",
+    "allActivities": "Todas as Atividades",
+    "noSpeakers": "Nenhum orador encontrado. Adicione o primeiro orador usando o botão acima.",
+    "tryAgain": "Tentar Novamente",
+    "reorderSuccess": "Ordem dos oradores atualizada com sucesso",
+    "reorderError": "Falha ao atualizar ordem dos oradores",
+    "error": {
+      "fetch": "Falha ao obter oradores. Por favor, tente novamente."
+    },
+    "modal": {
+      "addTitle": "Adicionar Novo Orador",
+      "editTitle": "Editar Orador",
+      "name": "Nome",
+      "namePlaceholder": "Introduza o nome do orador",
+      "role": "Cargo",
+      "rolePlaceholder": "Introduza o cargo do orador",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Introduza a descrição do orador",
+      "socialMedia": "Links de Redes Sociais (opcional)",
+      "linkedin": "URL do LinkedIn",
+      "facebook": "URL do Facebook",
+      "instagram": "URL do Instagram",
+      "youtube": "URL do YouTube",
+      "noActivities": "Nenhuma atividade encontrada",
+      "activity": "Atividade Associada (opcional)",
+      "activityPlaceholder": "Pesquisar uma atividade",
+      "image": "Imagem",
+      "imageHint": "Recomendado: Imagem quadrada, pelo menos 300x300px",
+      "clearImage": "Limpar Imagem",
+      "cancel": "Cancelar",
+      "saveChanges": "Guardar Alterações",
+      "addSpeaker": "Adicionar Orador"
+    },
+    "confirmDelete": {
+      "title": "Confirmação",
+      "message": "Tem a certeza que deseja eliminar este orador?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    },
+    "table": {
+      "photo": "Foto",
+      "name": "Nome",
+      "role": "Cargo",
+      "description": "Descrição",
+      "activity": "Atividade",
+      "socialMedia": "Redes Sociais",
+      "actions": "Ações"
+    },
+    "pagination": {
+      "goToPage": "Ir para página",
+      "go": "Ir"
+    }
+  }
+}
